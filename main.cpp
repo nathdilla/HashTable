@@ -3,22 +3,22 @@
 #include <algorithm>
 using namespace std;
 
-struct node
+struct node // simple sll node
 {
     int data = NULL;
     node *next;
 };
 
-class HashTable
+class HashTable // just an array of pointers to linked lists
 {
 private:
     const int SIZE = 53;
     const int HASH = 53;
-    node *buckets[53] = {};
+    node *buckets[53] = {}; // array of pointers
 
 public:
     HashTable(){};
-    int hash(string str)
+    int hash(string str) // turns string into hashable value
     {
         int data = 0;
         for (int i = 0; i < str.length(); i++)
@@ -27,37 +27,45 @@ public:
         }
         return data;
     };
-    void insert(string str)
+    void insert(string str) // o(1)
     {
         node *newNode = new node;
         int data = hash(str);
         // cout << data << endl;
         newNode->data = data;
-        newNode->next = buckets[data % HASH];
+        newNode->next = buckets[data % HASH]; // hash function is value % size of the bucket, collision
         buckets[data % HASH] = newNode;
     };
-    bool find(string str)
+    bool find(string str) // worst case o(n)
     {
         node *temp;
         bool res = false;
-        int data = hash(str);
+        int hashVal = hash(str);
         int inspt = 0;
-        for (int i = 0; i < SIZE; i++)
+
+        temp = buckets[hashVal % HASH];
+        if (temp != NULL)
         {
-            int x = i % HASH;
-            temp = buckets[x];
-            while (temp != NULL)
+            if (temp->data == hashVal)
             {
-                inspt++;
-                if (temp->data == data)
+                cout << "inspected 1 element" << endl;
+                return true;
+            }
+            else
+            {
+                int elem = 0;
+                while (temp != NULL) // if the first value isnt what we are looking for, loop through list
                 {
-                    res = true;
+                    elem++;
+                    if (temp->data == hashVal)
+                    {
+                        cout << "inspected " + to_string(elem) + " elements" << endl;
+                        return true;
+                    }
+                    temp = temp->next;
                 }
-                temp = temp->next;
             }
         }
-        cout << "inspected " + to_string(inspt) + " elements.." << endl;
-        ;
         return res;
     };
     void display()
@@ -80,7 +88,6 @@ public:
 
 int main()
 {
-    srand(time(0));
     cout << "nathan's hash table" << endl;
     HashTable myHashTable;
 
